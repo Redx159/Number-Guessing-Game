@@ -1,13 +1,19 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;  // Ensure the port is dynamically set for deployments
+const cors = require('cors');
+
+// Enable CORS for the deployed front-end (Netlify)
+app.use(cors({
+  origin: 'https://numberguessinggamebyabdelouahed.netlify.app', // Your Netlify front-end URL
+}));
 
 // Allow JSON body parsing
 app.use(bodyParser.json());
 
-// Serve static files from the 'public' folder
-app.use(express.static('public')); // Correct path to serve your public folder
+// Serve static files from the 'public' folder (ensure your 'public' folder is correctly set up)
+app.use(express.static('public')); 
 
 // Store usernames
 let usernames = [];
