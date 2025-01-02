@@ -33,4 +33,11 @@ app.post('/submit-username', (req, res) => {
 });
 
 // Endpoint to get all usernames
-app.get('/get-usernames', (req, res) => 
+app.get('/get-usernames', (req, res) => {
+    res.json(usernames);  // Return the array of usernames
+});
+
+// Start the server on the dynamic port
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
