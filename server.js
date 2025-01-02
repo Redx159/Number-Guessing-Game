@@ -1,58 +1,50 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-
+const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
+const cors = require('cors');
 
-// CORS configuration to allow requests from the frontend
+// Configure CORS to allow requests from your Netlify front-end
 app.use(cors({
-  origin: "https://numberguessinggamebyabdelouahed.netlify.app" // Your Netlify frontend URL
+    origin: 'https://numberguessinggamebyabdelouahed.netlify.app'
 }));
 
-// Middleware to parse JSON bodies
+// Allow JSON body parsing
 app.use(bodyParser.json());
 
-// Store usernames and game data
+// Store usernames and game logic
 let usernames = [];
-let targetNumber = Math.floor(Math.random() * 100) + 1;
+let randomNumber = Math.floor(Math.random() * 100) + 1; // Generate a random number between 1 and 100
 
 // Endpoint to receive username
-app.post("/submit-username", (req, res) => {
-  const username = req.body.username;
-  if (username) {
-    usernames.push(username);
-    console.log("Received username:", username);
-    res.status(200).send({ message: "Username received!" });
-  } else {
-    res.status(400).send({ message: "Username is required" });
-  }
+app.post('/submit-username', (req, res) => {
+    const username = req.body.username;
+    if (username) {
+        usernames.push(username);  // Store username
+        console.log('Received username:', username);  // Log the username to console
+        res.status(200).send({ message: 'Username received!' });
+    } else {
+        res.status(400).send({ message: 'Username is required' });
+    }
 });
 
 // Endpoint to make a guess
-app.post("/make-guess", (req, res) => {
-  const { guess } = req.body;
-  if (guess == null || isNaN(guess)) {
-    res.status(400).send({ message: "Invalid guess. Please enter a number." });
-    return;
-  }
-
-  if (guess < targetNumber) {
-    res.send({ message: "Too low!" });
-  } else if (guess > targetNumber) {
-    res.send({ message: "Too high!" });
-  } else {
-    res.send({ message: "Correct! You guessed the number!" });
-    targetNumber = Math.floor(Math.random() * 100) + 1; // Reset the number
-  }
-});
-
-// Endpoint to get all usernames
-app.get("/get-usernames", (req, res) => {
-  res.json(usernames);
+app.post('/make-guess', (req, res) => {
+    const guess = req.body.guess;
+    if (!guess || isNaN(guess)) {
+        return res.status(400).send({ message: 'Invalid guess' });
+    }
+    if (guess < randomNumber) {
+        res.status(200).send({ message: 'Too low, try again!' });
+    } else if (guess > randomNumber) {
+        res.status(200).send({ message: 'Too high, try again!' });
+    } else {
+        res.status(200).send({ message: 'Congratulations, you guessed it!' });
+        randomNumber = Math.floor(Math.random() * 100) + 1; // Reset the number for the next round
+    }
 });
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+    console.log(`Server running at http://localhost:${port}`);
 });
