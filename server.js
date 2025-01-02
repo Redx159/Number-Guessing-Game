@@ -13,8 +13,9 @@ app.use(cors({
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
-// Store usernames in memory
+// Store usernames and game data
 let usernames = [];
+let targetNumber = Math.floor(Math.random() * 100) + 1;
 
 // Endpoint to receive username
 app.post("/submit-username", (req, res) => {
@@ -25,6 +26,24 @@ app.post("/submit-username", (req, res) => {
     res.status(200).send({ message: "Username received!" });
   } else {
     res.status(400).send({ message: "Username is required" });
+  }
+});
+
+// Endpoint to make a guess
+app.post("/make-guess", (req, res) => {
+  const { guess } = req.body;
+  if (guess == null || isNaN(guess)) {
+    res.status(400).send({ message: "Invalid guess. Please enter a number." });
+    return;
+  }
+
+  if (guess < targetNumber) {
+    res.send({ message: "Too low!" });
+  } else if (guess > targetNumber) {
+    res.send({ message: "Too high!" });
+  } else {
+    res.send({ message: "Correct! You guessed the number!" });
+    targetNumber = Math.floor(Math.random() * 100) + 1; // Reset the number
   }
 });
 
